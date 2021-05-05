@@ -1,0 +1,6 @@
+[submodule "3rdparty/zfs"]
+	path = 3rdparty/zfs
+	url = https://github.com/openzfs/zfs.git
+[submodule "3rdparty/WSL2-Linux-Kernel"]
+	path = 3rdparty/WSL2-Linux-Kernel
+	url = https://github.com/microsoft/WSL2-Linux-Kernel.git
