@@ -47,7 +47,7 @@ You can see that drive in Linux
 lsblk
 ```
 
-Resources:
-https://wsl.dev/wsl2-kernel-zfs/
-https://docs.microsoft.com/de-de/windows/wsl/wsl2-mount-disk
+### Resources:
+- https://wsl.dev/wsl2-kernel-zfs/
+- https://docs.microsoft.com/de-de/windows/wsl/wsl2-mount-disk
 
