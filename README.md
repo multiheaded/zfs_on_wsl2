@@ -13,6 +13,20 @@ Should already be set to the correct tags. Verify and checkout fitting versions 
 Kernel will be 3rdparty/WS2-Linux-Kernel/arch/x86/boot/bzImage
 .deb files are created as 3rdparty/zfs/*.deb
 
+Install your newly built kernel by copying it to Windows:
+```
+# Create a directory on "Windows" path to store the kernel
+mkdir -p /mnt/c/wsl2_zfs
+
+# Copy the Kernel file
+cp 3rdparty/WSL2-Linux-Kernel/arch/x86/boot/bzImage /mnt/c/wsl2_zfs/kernel
+```
+
+Also install the comand line utilites:
+```
+sudo dpkg -i 3rdparty/zfs/zfs_*_amd64.deb 3rdparty/zfs/lib*.deb
+```
+
 In your Windows 10 environment, create or edit %userprofile%/.wslconfig and have it point to your kernel file. Copy and rename if necessary.
 ```
 [wsl2]
