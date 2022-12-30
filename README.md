@@ -2,7 +2,7 @@
 
 Get the WSL2-modified Linux kernel and OpenZFS source code:
 ```bash
-git submodule update --init --recursive
+git submodule update --init --recursive --progress
 ```
 Should already be set to the correct tags. Verify and checkout fitting versions if necessary!
 
