@@ -1,0 +1,11 @@
+diff --git a/Microsoft/config-wsl b/Microsoft/config-wsl
+index affeefd363aa..4ea0e15b3d28 100644
+--- a/Microsoft/config-wsl
++++ b/Microsoft/config-wsl
+@@ -4174,3 +4174,6 @@ CONFIG_ARCH_USE_MEMTEST=y
+ # CONFIG_HYPERV_TESTING is not set
+ # end of Kernel Testing and Coverage
+ # end of Kernel hacking
++CONFIG_KCSAN=n
++CONFIG_ZERO_CALL_USED_REGS=n
++CONFIG_SLS=y

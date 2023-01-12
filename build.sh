@@ -23,22 +23,27 @@ echo $ZFS_SOURCE_DIR
 
 function install_build_env {
 	echo "Setting up build environment"
-	sudo apt install -yqq build-essential autoconf automake libtool gawk alien fakeroot dkms libblkid-dev uuid-dev libudev-dev libssl-dev zlib1g-dev libaio-dev libattr1-dev libelf-dev python3 python3-dev python3-setuptools python3-cffi libffi-dev flex bison bc
+	sudo apt install -yqq build-essential autoconf automake libtool gawk alien fakeroot dkms libblkid-dev uuid-dev libudev-dev libssl-dev zlib1g-dev libaio-dev libattr1-dev libelf-dev python3 python3-dev python3-setuptools python3-cffi libffi-dev flex bison bc dwarves
 }
 
 function prepare_kernel {
 	echo "Preparing kernel"
 	cd $WSL_KERNEL_SOURCE_DIR
 
+	# some hardeing options in the Linux kernel are not yet preconfigured in the WSL kernel config, so we do it ourselves...
+	git apply ../../config-wsl.patch
 	cp Microsoft/config-wsl .config
 
-	make -j4 prepare scripts
-	make -j4 prepare
+	make -j${PARALLEL_THREADS} prepare scripts
+	make -j${PARALLEL_THREADS} prepare
 }
 
 function prepare_zfs {
 	echo "Configuring ZFS source"
 	cd $ZFS_SOURCE_DIR
+	# https://github.com/openzfs/zfs/commit/b72efb751147ab57afd1588a15910f547cb22600
+	# configure broken on Python version check if not cherry-picked. Probably not necessary in future release
+	git cherry-pick b72efb751147ab57afd1588a15910f547cb22600
 	sh autogen.sh
 	./configure --prefix=/ --libdir=/lib --includedir=/usr/include --datarootdir=/usr/share --enable-linux-builtin=yes --with-linux=$WSL_KERNEL_SOURCE_DIR --with-linux-obj=$WSL_KERNEL_SOURCE_DIR --enable-systemd
 }
@@ -52,8 +57,8 @@ function copy_zfs_builtin {
 function build_zfs {
 	echo "Building ZFS"
 	cd $ZFS_SOURCE_DIR
-	make -j8
-	make -j1 deb-utils
+	make -j${PARALLEL_THREADS}
+	make deb-utils
 }
 
 function enable_zfs_in_kernel {
@@ -65,7 +70,7 @@ function enable_zfs_in_kernel {
 function build_zfs_enabled_kernel {
 	echo "Building new WSL2 kernel"
 	cd $WSL_KERNEL_SOURCE_DIR
-	make -j8
+	make -j${PARALLEL_THREADS}
 }
 
 function install_kernel_modules {
