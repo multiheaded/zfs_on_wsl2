@@ -133,6 +133,19 @@ function make_all {
 	install_kernel_modules
 }
 
+function make_clean {
+	echo ""
+	echo "Cleaning source:"
+	echo ""
+	cd "$WSL_KERNEL_SOURCE_DIR"
+	git reset --hard
+	git clean -fdx
+	make clean
+	cd "$ZFS_SOURCE_DIR"
+	git reset --hard
+	git clean -fdx
+}
+
 function version_kernel {
 	if [ -r 3rdparty/WSL2-Linux-Kernel/.config ]; then
 		grep "Kernel Configuration" 3rdparty/WSL2-Linux-Kernel/.config | cut -d" " -f3
@@ -163,6 +176,8 @@ SYNTAX:
 
 COMMANDS:
 
+    clean           # Clean up source code
+
     build           # Build kernel from source
 
     env             # Install building environment
@@ -184,6 +199,12 @@ if (( $# == 0 )); then
 else
 	while (( $# > 0 )); do
 	case "$1" in
+
+	clean)
+	  print_info
+		shift
+		make_clean
+		;;
 
 	build|"")
 		print_info

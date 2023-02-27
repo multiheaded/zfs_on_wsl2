@@ -12,6 +12,8 @@
 
 ### Commands
 
+    clean           # Clean up source code
+
     build           # Build kernel from source
 
     env             # Install building environment
@@ -38,7 +40,14 @@
     Should already be set to the correct tags. Verify and checkout fitting versions if necessary! \
     <br/>
 
-3.  Start the build:
+3.  In case you had built the kernel before, first clean the source tree:
+    ```bash
+    /bin/bash build.sh clean
+    ```
+    **WARNING:** this will reset any changes you made under the `3rdparty/WSL2-Linux-Kernel` and `3rdparty/zfs` directories! \
+    <br/>
+
+4.  Start the build:
     ```bash
     /bin/bash build.sh
     ```
