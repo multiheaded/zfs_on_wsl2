@@ -55,7 +55,8 @@ function install_build_env {
 	echo ""
 	echo "Setting up build environment:"
 	echo ""
-	sudo apt install -yqq build-essential autoconf automake libtool gawk alien fakeroot dkms libblkid-dev uuid-dev libudev-dev libssl-dev zlib1g-dev libaio-dev libattr1-dev libelf-dev python3 python3-dev python3-setuptools python3-cffi libffi-dev flex bison bc dwarves
+	sudo apt install -yqq build-essential autoconf automake libtool gawk alien fakeroot dkms libblkid-dev uuid-dev libudev-dev libssl-dev zlib1g-dev libaio-dev libattr1-dev libelf-dev python3 python3-dev python3-setuptools python3-cffi python3-pip libffi-dev flex bison bc dwarves
+	pip install distlib packaging
 }
 
 function prepare_kernel {
