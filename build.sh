@@ -151,6 +151,34 @@ function version_zfs {
 	fi
 }
 
+function print_help {
+  cat << EOT
+
+$(print_version)
+
+SYNTAX:
+
+    ./build.sh [ command [arguments] ]
+
+
+COMMANDS:
+
+    build           # Build kernel from source
+
+    env             # Install building environment
+
+    help            # Show this help
+
+    info            # Show information about directories and source versions
+
+    version         # Show the script's version
+
+
+INFO:
+EOT
+}
+
+
 if (( $# == 0 )); then
 	make_all
 else
@@ -167,6 +195,17 @@ else
 		print_info
 		shift
 		install_build_env
+		;;
+
+	info)
+		shift
+		print_info
+		;;
+
+	-h|--help|help)
+		shift
+		print_help
+		print_info
 		;;
 
 	-V|--version|version)

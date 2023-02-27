@@ -16,6 +16,8 @@
 
     env             # Install building environment
 
+    help            # Show this help
+
     info            # Show information about directories and source versions
 
     version         # Show the script's version
