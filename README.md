@@ -18,6 +18,8 @@
 
     build           # Build kernel from source
 
+    debs            # Install zfs command-line binaries to current distro
+
     env             # Install building environment
 
     help            # Show this help

@@ -122,6 +122,15 @@ function install_kernel_modules {
 	sudo make modules_install
 }
 
+function install_debs {
+	echo ""
+	echo "Installing command line tools:"
+	echo ""
+
+	cd "$SCRIPT_DIR"
+	sudo apt install 3rdparty/zfs/zfs_*_amd64.deb 3rdparty/zfs/lib*.deb libzfs4linux
+}
+
 function make_all {
 	install_build_env
 	prepare_kernel
@@ -182,6 +191,8 @@ COMMANDS:
 
     build           # Build kernel from source
 
+    debs            # Install zfs command-line binaries to current distro
+
     env             # Install building environment
 
     help            # Show this help
@@ -212,6 +223,12 @@ else
 		print_info
 		shift
 		make_all
+		;;
+
+	debs)
+		print_info
+		shift
+		install_debs
 		;;
 
 	env)
