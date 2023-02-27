@@ -176,6 +176,8 @@ SYNTAX:
 
 COMMANDS:
 
+    update          # Update source code
+
     clean           # Clean up source code
 
     build           # Build kernel from source
@@ -221,6 +223,13 @@ else
 	info)
 		shift
 		print_info
+		;;
+
+	update)
+		print_info
+		shift
+		git pull
+		git submodule update --init --recursive --progress
 		;;
 
 	-h|--help|help)

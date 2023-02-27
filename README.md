@@ -12,6 +12,8 @@
 
 ### Commands
 
+    update          # Update source code
+
     clean           # Clean up source code
 
     build           # Build kernel from source
@@ -33,11 +35,12 @@
     If you already have the repo, just run `git pull` to get any updates.\
     <br/>
 
-2.  Get the WSL2-modified Linux kernel and OpenZFS source code:
+2.  Get/update the WSL2-modified Linux kernel and OpenZFS source code:
     ```bash
-    git submodule update --init --recursive --progress
+    /bin/bash build.sh update
     ```
-    Should already be set to the correct tags. Verify and checkout fitting versions if necessary! \
+    **Note:** Should already set the `WSL2-Linux-Kernel` and `zfs` submodules under the `3rdparty` directory to the correct tags.
+    Verify and checkout fitting versions if necessary! \
     <br/>
 
 3.  In case you had built the kernel before, first clean the source tree:
