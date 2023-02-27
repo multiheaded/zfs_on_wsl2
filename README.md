@@ -20,6 +20,8 @@
 
     debs            # Install zfs command-line binaries to current distro
 
+    wslu            # Install/upgrade WSL Utilities command-line binaries to current distro
+
     env             # Install building environment
 
     help            # Show this help

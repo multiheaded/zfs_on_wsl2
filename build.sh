@@ -131,6 +131,18 @@ function install_debs {
 	sudo apt install 3rdparty/zfs/zfs_*_amd64.deb 3rdparty/zfs/lib*.deb libzfs4linux
 }
 
+function install_wslu {
+	echo ""
+	echo "Installing latest WSL Utilities:"
+	echo ""
+	add-apt-repository -L | grep -q wslutilities/wslu
+	if (( $? != 0 )); then
+		sudo add-apt-repository -y ppa:wslutilities/wslu
+		sudo apt update
+	fi
+	sudo apt upgrade wslu
+}
+
 function make_all {
 	install_build_env
 	prepare_kernel
@@ -193,6 +205,8 @@ COMMANDS:
 
     debs            # Install zfs command-line binaries to current distro
 
+    wslu            # Install/upgrade WSL Utilities command-line binaries to current distro
+
     env             # Install building environment
 
     help            # Show this help
@@ -247,6 +261,11 @@ else
 		shift
 		git pull
 		git submodule update --init --recursive --progress
+		;;
+
+	wslu)
+		shift
+		install_wslu
 		;;
 
 	-h|--help|help)
