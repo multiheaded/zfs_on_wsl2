@@ -10,24 +10,32 @@ ZFS_SOURCE_DIR=${SUBMODULE_PATH}/zfs
 
 PARALLEL_THREADS=$(/usr/bin/nproc --all)
 
-echo "Script location: "
+echo ""
+echo "Script location:"
 echo $SCRIPT_DIR
 
+echo ""
 echo "WSL2 Kernel source location:"
 echo $WSL_KERNEL_SOURCE_DIR
 
+echo ""
 echo "OpenZFS source location:"
 echo $ZFS_SOURCE_DIR
+echo ""
 
 
 
 function install_build_env {
-	echo "Setting up build environment"
+	echo ""
+	echo "Setting up build environment:"
+	echo ""
 	sudo apt install -yqq build-essential autoconf automake libtool gawk alien fakeroot dkms libblkid-dev uuid-dev libudev-dev libssl-dev zlib1g-dev libaio-dev libattr1-dev libelf-dev python3 python3-dev python3-setuptools python3-cffi libffi-dev flex bison bc dwarves
 }
 
 function prepare_kernel {
-	echo "Preparing kernel"
+	echo ""
+	echo "Preparing kernel:"
+	echo ""
 	cd $WSL_KERNEL_SOURCE_DIR
 
 	# some hardeing options in the Linux kernel are not yet preconfigured in the WSL kernel config, so we do it ourselves...
@@ -39,7 +47,9 @@ function prepare_kernel {
 }
 
 function prepare_zfs {
-	echo "Configuring ZFS source"
+	echo ""
+	echo "Configuring ZFS source:"
+	echo ""
 	cd $ZFS_SOURCE_DIR
 	# https://github.com/openzfs/zfs/commit/b72efb751147ab57afd1588a15910f547cb22600
 	# configure broken on Python version check if not cherry-picked. Probably not necessary in future release
@@ -49,32 +59,42 @@ function prepare_zfs {
 }
 
 function copy_zfs_builtin {
-	echo "Copying ZFS module to kernel source"
+	echo ""
+	echo "Copying ZFS module to kernel source:"
+	echo ""
 	cd $ZFS_SOURCE_DIR
 	./copy-builtin $WSL_KERNEL_SOURCE_DIR
 }
 
 function build_zfs {
-	echo "Building ZFS"
+	echo ""
+	echo "Building ZFS:"
+	echo ""
 	cd $ZFS_SOURCE_DIR
 	make -j${PARALLEL_THREADS}
 	make deb-utils
 }
 
 function enable_zfs_in_kernel {
-	echo "Enabling ZFS in kernel config"
+	echo ""
+	echo "Enabling ZFS in kernel config:"
+	echo ""
 	cd $WSL_KERNEL_SOURCE_DIR
 	echo "CONFIG_ZFS=y" >> .config
 }
 
 function build_zfs_enabled_kernel {
-	echo "Building new WSL2 kernel"
+	echo ""
+	echo "Building new WSL2 kernel:"
+	echo ""
 	cd $WSL_KERNEL_SOURCE_DIR
 	make -j${PARALLEL_THREADS}
 }
 
 function install_kernel_modules {
-	echo "Install modules and metadata to /usr/lib"
+	echo ""
+	echo "Install modules and metadata to /usr/lib:"
+	echo ""
 	cd $WSL_KERNEL_SOURCE_DIR
 	sudo make modules_install
 }
