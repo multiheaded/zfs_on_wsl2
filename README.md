@@ -2,9 +2,29 @@
 
 ## Script to build the kernel from source
 
+
+### Syntax
+
+```bash
+./build.sh [ command ]
+```
+
+
+### Commands
+
+    build           # Build kernel from source
+
+    env             # Install building environment
+
+    info            # Show information about directories and source versions
+
+    version         # Show the script's version
+
+## Step-by-step instructions to build the kernel
+
 1.  For a fresh install, get the code:
     ```bash
-    git clone https://github.com/multiheaded/zfs_on_wsl2.git
+    git clone https://github.com/multiheaded/zfs_on_wsl2.git && cd zfs_on_wsl2
     ```
     If you already have the repo, just run `git pull` to get any updates.\
     <br/>
@@ -20,9 +40,10 @@
     ```bash
     /bin/bash build.sh
     ```
-    
-    Kernel will be `3rdparty/WSL2-Linux-Kernel/arch/x86/boot/bzImage`  
-    `.deb` files are created as `3rdparty/zfs/*.deb`
+
+### Result
+- Kernel will be `3rdparty/WSL2-Linux-Kernel/arch/x86/boot/bzImage`
+- `.deb` files are created as `3rdparty/zfs/*.deb`
 
 
 ## Install the kernel to WSL

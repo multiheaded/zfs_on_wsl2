@@ -1,5 +1,6 @@
 #!/bin/bash
 
+SCRIPT_VERSION=1.1.0
 SCRIPT_PATH=$(readlink -f $0)
 SCRIPT_DIR=$(dirname $SCRIPT_PATH)
 
@@ -10,20 +11,42 @@ ZFS_SOURCE_DIR=${SUBMODULE_PATH}/zfs
 
 PARALLEL_THREADS=$(/usr/bin/nproc --all)
 
-echo ""
-echo "Script location:"
-echo $SCRIPT_DIR
+# Helper variable to print the information form print_info() only once
+declare -gi info_printed=0
 
-echo ""
-echo "WSL2 Kernel source location:"
-echo $WSL_KERNEL_SOURCE_DIR
+function print_info {
+	(( $info_printed == 0 )) || return 0
 
-echo ""
-echo "OpenZFS source location:"
-echo $ZFS_SOURCE_DIR
-echo ""
+	info_printed=1
 
+	echo ""
+	print_version
 
+	echo ""
+	echo "Script location:"
+	echo $SCRIPT_DIR
+
+	echo ""
+	echo "WSL2 Kernel source location:"
+	echo $WSL_KERNEL_SOURCE_DIR
+
+	echo ""
+	echo "WSL2 Kernel version:"
+	version_kernel
+
+	echo ""
+	echo "OpenZFS source location:"
+	echo $ZFS_SOURCE_DIR
+	echo ""
+
+	echo "OpenZFS version:"
+	version_zfs
+	echo ""
+}
+
+function print_version {
+	echo "zfs_on_linux/build.sh v$SCRIPT_VERSION"
+}
 
 function install_build_env {
 	echo ""
@@ -99,13 +122,64 @@ function install_kernel_modules {
 	sudo make modules_install
 }
 
-install_build_env
-prepare_kernel
-prepare_zfs
-copy_zfs_builtin
-build_zfs
-enable_zfs_in_kernel
-build_zfs_enabled_kernel
-install_kernel_modules
+function make_all {
+	install_build_env
+	prepare_kernel
+	prepare_zfs
+	copy_zfs_builtin
+	build_zfs
+	enable_zfs_in_kernel
+	build_zfs_enabled_kernel
+	install_kernel_modules
+}
 
+function version_kernel {
+	if [ -r 3rdparty/WSL2-Linux-Kernel/.config ]; then
+		grep "Kernel Configuration" 3rdparty/WSL2-Linux-Kernel/.config | cut -d" " -f3
+	elif [ -r 3rdparty/WSL2-Linux-Kernel/Microsoft/config-wsl ]; then
+		grep "Kernel Configuration" 3rdparty/WSL2-Linux-Kernel/Microsoft/config-wsl | cut -d" " -f3
+	else
+		echo "N/A"
+	fi
+}
+
+function version_zfs {
+	if [ -r 3rdparty/zfs/zfs.release ]; then
+		cat 3rdparty/zfs/zfs.release
+	else
+		echo "N/A"
+	fi
+}
+
+if (( $# == 0 )); then
+	make_all
+else
+	while (( $# > 0 )); do
+	case "$1" in
+
+	build|"")
+		print_info
+		shift
+		make_all
+		;;
+
+	env)
+		print_info
+		shift
+		install_build_env
+		;;
+
+	-V|--version|version)
+		shift
+		print_version
+		;;
+
+	*)
+		echo "Unknown command '$1' ..."
+		exit 1
+		;;
+
+	esac
+	done
+fi
 
