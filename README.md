@@ -6,7 +6,7 @@
 ### Syntax
 
 ```bash
-./build.sh [ command ]
+./build.sh [ command [ arguments ] ]
 ```
 
 
@@ -17,6 +17,24 @@
     clean           # Clean up source code
 
     build           # Build kernel from source
+
+    install [ {KERNEL_TARGET_DIR} [ {KERNEL_SUFFIX} ] ]
+                    #
+                    # Install kernel to WSL2
+                    #
+                    # Optional arguments:
+                    #
+                    # - KERNEL_TARGET_DIR indicates the directory where the Kernel is stored on Windows
+                    #
+                    #       Default:  "C:\wsl2_zfs"
+                    #       Note:     Can be given as a Windows path, or WSL path.
+                    #
+                    # - KERNEL_SUFFIX specifies a suffix to be added to the resulting kernel-name:
+                    #       e.g. "kernel-5.15.90.1_zfs-2.1.9-1_SUFFIX.bin".
+                    #
+                    #       Default:  no suffix.
+                    #       Note:     This parameter requires KERNEL_TARGET_DIR to be set.
+                    #                 However, you can use "" if you still want to use the default value.
 
     debs            # Install zfs command-line binaries to current distro
 
@@ -65,6 +83,24 @@
 
 
 ## Install the kernel to WSL
+
+### Option A: Automated install
+
+1. Install the kernel and update `.wslconf`
+    ```bash
+    /bin/bash install
+    ```
+   **Note:** For more installation options, see the syntax of the `install` command above or in the `./build.sh help` command output. \
+   <br/>
+
+2.  Install the zfs command-line utilities
+    ```bash
+    /bin/bash debs
+    ```
+    **Warning:** The installation of these binaries might fail due to missing dependencies or unresolved conflicts. \
+    **Note:** It is also possible to use the zfs binaries supplied by the package maintainers of your distribution.
+
+### Option B: Manual install
 
 1.  Install your newly built kernel by copying it to Windows:
     ```bash

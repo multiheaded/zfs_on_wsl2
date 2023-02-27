@@ -122,6 +122,77 @@ function install_kernel_modules {
 	sudo make modules_install
 }
 
+function install_kernel {
+	install_wslu
+
+	echo ""
+	echo "Installing kernel:"
+	echo ""
+
+	local "KERNEL_TARGET_DIR=${1:-/mnt/c/wsl2_zfs}"
+
+	if contains "$KERNEL_TARGET_DIR" ":"; then
+		KERNEL_TARGET_DIR=$(wslpath -u "$KERNEL_TARGET_DIR")
+	fi
+
+	local "SYSTEM_DRIVE=$(wslpath -u "$(wslvar -s SystemDrive)\\")"
+	local "MOUNT_ROOT=${SYSTEM_DRIVE: 0 : -2 }"
+
+	if ! starts_with "$KERNEL_TARGET_DIR" "$MOUNT_ROOT"; then
+		KERNEL_TARGET_DIR=$SYSTEM_DRIVE$KERNEL_TARGET_DIR
+	fi
+
+	local "KERNEL_TARGET=$KERNEL_TARGET_DIR/$(kernel_filename {$2:-})"
+	local "KERNEL_TARGET_WIN=$(wslpath -w "$KERNEL_TARGET")"
+	local "WSL_CONFIG_WIN=$(wslvar USERPROFILE)\\.wslconfig"
+	local "WSL_CONFIG=$(wslpath "$WSL_CONFIG_WIN")"
+
+	echo "Kernel path (windows):     $KERNEL_TARGET_WIN"
+	echo "Kernel path (linux):       $KERNEL_TARGET"
+	echo "WSL config file (windows): $WSL_CONFIG_WIN"
+	echo "WSL config file (linux):   $WSL_CONFIG"
+	echo ""
+
+	cd "$SCRIPT_DIR"
+	mkdir -p "$KERNEL_TARGET_DIR"
+	cp 3rdparty/WSL2-Linux-Kernel/arch/x86/boot/bzImage "$KERNEL_TARGET"
+
+	local WSL_LINE=${KERNEL_TARGET_WIN//\\/\\\\\\\\}
+
+	if [ ! -f "$WSL_CONFIG" ]; then
+		cat > "$WSL_CONFIG" | <<<EOL
+		[wsl2]
+		kernel=$WSL_LINE
+		localhostForwarding=true
+		swap=0
+		EOL
+
+	else
+		echo "Current WSL config:"
+		echo "---------8<--------"
+		cat "$WSL_CONFIG"
+		echo "---------8<--------"
+		echo ""
+
+		if grep -qe "^kernel\s*=" "$WSL_CONFIG"; then
+			# 1. replace current kernel path with new path
+			# 2. remove pre-existing line with the same setting
+			sed -i -e "s|^\s*kernel\s*=[^\n]*|;\0\nkernel=$WSL_LINE\r|i;s|^\s*;\s*kernel=\s*${WSL_LINE//\\\\\\\\/\\\\\\\\\\\?}\s*||g;/^$/d" "$WSL_CONFIG"
+		else
+			# simply add the kernel setting to the config file
+			echo "kernel=$WSL_LINE\r" >> "$WSL_CONFIG"
+		fi
+	fi
+
+	echo "New WSL config:"
+	echo "---------8<--------"
+	cat "$WSL_CONFIG"
+	echo "---------8<--------"
+	echo ""
+
+	exit
+}
+
 function install_debs {
 	echo ""
 	echo "Installing command line tools:"
@@ -185,6 +256,30 @@ function version_zfs {
 	fi
 }
 
+function kernel_filename {
+  local "KERNEL_VERSION=kernel-$(version_kernel)_zfs-$(version_zfs)"
+
+  if [[ "${1:-}" ]]; then
+	  echo "${KERNEL_VERSION}_${1}.bin"
+  else
+    echo "KERNEL_VERSION.bin"
+  fi
+}
+
+function contains {
+	case "$1" in
+		*"$2"*) return 0;;
+		*) return 1;;
+	esac
+}
+
+function starts_with {
+	case "$1" in
+		"$2"*) return 0;;
+		*) return 1;;
+	esac
+}
+
 function print_help {
   cat << EOT
 
@@ -202,6 +297,24 @@ COMMANDS:
     clean           # Clean up source code
 
     build           # Build kernel from source
+
+    install [ {KERNEL_TARGET_DIR} [ {KERNEL_SUFFIX} ] ]
+                    #
+                    # Install kernel to WSL2
+                    #
+                    # Optional arguments:
+                    #
+                    # - KERNEL_TARGET_DIR indicates the directory where the Kernel is stored on Windows
+                    #
+                    #       Default:  "C:\wsl2_zfs"
+                    #       Note:     Can be given as a Windows path, or WSL path.
+                    #
+                    # - KERNEL_SUFFIX specifies a suffix to be added to the resulting kernel-name:
+                    #       "$(kernel_filename SUFFIX)".
+                    #
+                    #       Default:  no suffix.
+                    #       Note:     This parameter requires KERNEL_TARGET_DIR to be set.
+                    #                 However, you can use "" if you still want to use the default value.
 
     debs            # Install zfs command-line binaries to current distro
 
@@ -254,6 +367,13 @@ else
 	info)
 		shift
 		print_info
+		;;
+
+	install)
+		print_info
+		shift
+		install_kernel "$@"
+		shift
 		;;
 
 	update)
