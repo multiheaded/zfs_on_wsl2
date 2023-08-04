@@ -1,7 +1,7 @@
-diff --git a/Microsoft/config-wsl b/Microsoft/config-wsl
+diff --git a/arch/x86/configs/config-wsl b/arch/x86/configs/config-wsl
 index affeefd363aa..4ea0e15b3d28 100644
---- a/Microsoft/config-wsl
-+++ b/Microsoft/config-wsl
+--- a/arch/x86/configs/config-wsl
++++ b/arch/x86/configs/config-wsl
 @@ -4174,3 +4174,6 @@ CONFIG_ARCH_USE_MEMTEST=y
  # CONFIG_HYPERV_TESTING is not set
  # end of Kernel Testing and Coverage
